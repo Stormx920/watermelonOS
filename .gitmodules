@@ -10,3 +10,6 @@
 [submodule "slstatus"]
 	path = slstatus
 	url = https://github.com/stormx920/slstatus
+[submodule "wallpaper"]
+	path = wallpaper
+	url = https://github.com/stormx920/wallpaper
