@@ -42,13 +42,31 @@ addrepo() { \
     echo "## Adding the Artix Universe and Omniverse and Arch repositories to /etc/pacman.conf ##"
     echo "#########################################################"
     grep -qxF "[universe]" /etc/pacman.conf ||
-        ( echo " "; echo "[universe]"; echo "SigLevel = Required DatabaseOptional"; \
+        ( echo " "; echo "[universe]"; \
         echo "Server = https://mirror.pascalpuffke.de/artix-universe/$arch") | sudo tee -a /etc/pacman.conf
     grep -qxF "[omniverse]" /etc/pacman.conf ||
-        ( echo " "; echo "[omniverse]"; echo "SigLevel = Required DatabaseOptional"; \
+        ( echo " "; echo "[omniverse]"; \
         echo "Server = https://eu-mirror.artixlinux.org/omniverse/$arch") | sudo tee -a /etc/pacman.conf
+    sudo pacman -Sy
+    sudo pacman -S systemd
+    grep -qxF "[extra]" /etc/pacman.conf ||
+        ( echo " "; echo "[extra]"; \
+        echo "Include = /etc/pacman.d/mirrorlist-arch") | sudo tee -a /etc/pacman.conf
+    grep -qxF "[multilib]" /etc/pacman.conf ||
+        ( echo " "; echo "[multilib]"; \
+        echo "Include = /etc/pacman.d/mirrorlist-arch") | sudo tee -a /etc/pacman.conf
+    sudo pacman -Sy
 }
 
 addrepo || error "Error adding repos to /etc/pacman.conf."
 
+addmypackages() {\
+        sudo pacman -S librewolf steam wine keepassxc neovim
 
+
+
+
+
+
+
+}
