@@ -1,2 +1,3 @@
-# watermelonOS
-watermelonOS by Tyrone Watermelon
+# WATERMELONOS
+
+# TABEL OF CONTENTS
