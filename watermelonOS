@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 if [ "$(id -u)" = 0 ]; then
     echo "Not to be run as root because it makes changes to the \$HOME directory of \$USER"
     exit 1
@@ -23,6 +22,10 @@ checkbox=black,blue
 compactbutton=black,blue
 button=black,red"
 
+echo "##################################################################"
+echo "## Syncing the repos and installing 'whiptail' if not installed ##"
+echo "##################################################################"
+sudo pacman --noconfirm --needed -Syu libnewt || error "Error syncing the repos."
 
 welcome() { \
     whiptail --title "Installing watermelonOS!" --msgbox "This is a script that will install watermelonOS, basically just some scripts and my dwm + suckless tools builds" 16 60
@@ -42,6 +45,7 @@ grep -qs "#ParallelDownloads" /etc/pacman.conf && speedwarning
 grep -qs "ID=artix" /etc/os-release || distrowarning
 
 lastchance() { \
+    whiptail --title "Installing DTOS!" --msgbox "WARNING! The DTOS installation script is currently in public beta testing. There are almost certainly errors in it; therefore, it is strongly recommended that you not install this on production machines. It is recommended that you try this out in either a virtual machine or on a test machine." 16 60
 
     whiptail --title "Are You Sure You Want To Do This?" --yesno "Shall we begin?" 8 60 || { clear; exit 1; }
 }
@@ -64,6 +68,10 @@ addrepo() { \
     grep -qxF "[multilib]" /etc/pacman.conf ||
         ( echo " "; echo "[multilib]"; \
         echo "Include = /etc/pacman.d/mirrorlist-arch") | sudo tee -a /etc/pacman.conf
+    grep -qxF "[watermelonos-core-repo]" /etc/pacman.conf ||
+        ( echo " "; echo "[watermelonos-core-repo]"; \
+        echo "SigLevel = Optional DatabaseOptional"; \
+        echo "Server = https://github.com/TyroneWatermelon420/$repo/raw/main/$arch") | sudo tee -a /etc/pacman.conf
     sudo pacman -Sy
 }
 
