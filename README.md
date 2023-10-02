@@ -1,5 +1,5 @@
 # WATERMELONOS
 
-# TABEL OF CONTENTS
-[About WatermelonOS](README.md)
+## TABEL OF CONTENTS
+ - [About WatermelonOS](README.md)
 # ABOUT WATERMELONOS
