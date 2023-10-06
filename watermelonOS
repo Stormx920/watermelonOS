@@ -45,7 +45,7 @@ grep -qs "#ParallelDownloads" /etc/pacman.conf && speedwarning
 grep -qs "ID=artix" /etc/os-release || distrowarning
 
 lastchance() { \
-    whiptail --title "Installing DTOS!" --msgbox "WARNING! The DTOS installation script is currently in public beta testing. There are almost certainly errors in it; therefore, it is strongly recommended that you not install this on production machines. It is recommended that you try this out in either a virtual machine or on a test machine." 16 60
+    whiptail --title "Installing WatermelonOS!" --msgbox "WARNING! The WatermelonOS installation script is currently in public beta testing. There are almost certainly errors in it; therefore, it is strongly recommended that you not install this on production machines. It is recommended that you try this out in either a virtual machine or on a test machine." 16 60
 
     whiptail --title "Are You Sure You Want To Do This?" --yesno "Shall we begin?" 8 60 || { clear; exit 1; }
 }
@@ -77,13 +77,118 @@ addrepo() { \
 
 addrepo || error "Error adding repos to /etc/pacman.conf."
 
-addmypackages() {\
-        sudo pacman -S librewolf steam wine keepassxc neovim
+sudo pacman --noconfirm --needed -Sy watermelonos-core-repo/paru-bin || error "Error installing dtos-core-repo/paru-bin."
+
+sudo pacman -Sy dwm-watermelonos dmenu-watermelonos slstatus-watermelonos st-watermelonos
 
 
-
-
-
-
-
+max() {
+    echo -e "$1\n$2" | sort -n | tail -1
 }
+
+getbiggestword() {
+    echo "$@" | sed "s/ /\n/g" | wc -L
+}
+
+replicate() {
+    local n="$1"
+    local x="$2"
+    local str
+
+    for _ in $(seq 1 "$n"); do
+        str="$str$x"
+    done
+    echo "$str"
+}
+
+programchoices() {
+    choices=()
+    local maxlen; maxlen="$(getbiggestword "${!checkboxes[@]}")"
+    linesize="$(max "$maxlen" 42)"
+    local spacer; spacer="$(replicate "$((linesize - maxlen))" " ")"
+
+    for key in "${!checkboxes[@]}"
+    do
+        # A portable way to check if a command exists in $PATH and is executable.
+        # If it doesn't exist, we set the tick box to OFF.
+        # If it exists, then we set the tick box to ON.
+        if ! command -v "${checkboxes[$key]}" > /dev/null; then
+            # $spacer length is defined in the individual window functions based
+            # on the needed length to make the checkbox wide enough to fit window.
+            choices+=("${key}" "${spacer}" "OFF")
+        else
+            choices+=("${key}" "${spacer}" "ON")
+        fi
+    done
+}
+
+selectedprograms() {
+    result=$(
+        # Creates the whiptail checklist. Also, we use a nifty
+        # trick to swap stdout and stderr.
+        whiptail --title "$title"                               \
+                 --checklist "$text" 22 "$((linesize + 16))" 12 \
+                 "${choices[@]}"                                \
+                 3>&2 2>&1 1>&3
+    )
+}
+
+exitorinstall() {
+    exitstatus=$?
+    # Check the exit status, if 0 we will install the selected
+    # packages. A command which exits with zero (0) has succeeded.
+    # A non-zero (1-255) exit status indicates failure.
+    if [ $exitstatus = 0 ]; then
+        # Take the results and remove the "'s and add new lines.
+        # Otherwise, pacman is not going to like how we feed it.
+        programs=$(echo $result | sed 's/" /\n/g' | sed 's/"//g' )
+        echo $programs
+        paru --needed --ask 4 -Sy "$programs" || \
+        echo "Failed to install required packages."
+    else
+        echo "User selected Cancel."
+    fi
+}
+
+sudo pacman --needed --ask 4 -S librewolf-bin neovim picom feh conky pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber xorg-xinput sddm sddm-openrc sddm-theme-aerial-git xorg-xinput zsh zsh-autosuggestions zsh-syntax-highlighting
+
+echo "################################################################"
+echo "## Copying WatermelonOS configuration files from /etc/watermelonos into \$HOME ##"
+echo "################################################################"
+[ ! -d /etc/watermelonos ] && sudo mkdir /etc/watermelonos
+[ -d /etc/watermelonos ] && mkdir ~/watermelonos-backup-$(date +%Y.%m.%d-%H%M) && cp -Rf /etc/watermelonos ~/watermelonos-backup-$(date +%Y.%m.%d-%H%M)
+[ ! -d ~/.config ] && mkdir ~/.config
+[ -d ~/.config ] && mkdir ~/.config-backup-$(date +%Y.%m.%d-%H%M) && cp -Rf ~/.config ~/.config-backup-$(date +%Y.%m.%d-%H%M)
+cd /etc/watermelonos && cp -Rf . ~ && cd -
+
+# Change all scripts in .local/bin to be executable.
+find $HOME/.local/bin -type f -print0 | xargs -0 chmod 775
+
+echo "################################################################"
+echo "## Setting default shell to zsh ##"
+echo "################################################################"
+sudo chsh $USER -s "/bin/zsh"
+
+# Enable sddm as login manager
+sudo rc-update add sddm default
+echo "###################################"
+echo "## Enable sddm as login manager. ##"
+echo "###################################"
+
+## Make multicolor-sddm-theme the default sddm theme ##
+# This is the sddm system configuration file.
+
+echo "##############################"
+echo "## WatermelonOS has been installed! ##"
+echo "##############################"
+
+while true; do
+    read -p "Do you want to reboot to get your watermelonos? [Y/n] " yn
+    case $yn in
+        [Yy]* ) reboot;;
+        [Nn]* ) break;;
+        "" ) reboot;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
