@@ -77,7 +77,7 @@ addrepo() { \
 
 addrepo || error "Error adding repos to /etc/pacman.conf."
 
-sudo pacman --noconfirm --needed -Sy watermelonos-core-repo/paru-bin || error "Error installing dtos-core-repo/paru-bin."
+sudo pacman --noconfirm --needed -Sy watermelonos-core-repo/paru-bin || error "Error installing watermelonos-core-repo/paru-bin."
 
 sudo pacman -Sy dwm-watermelonos dmenu-watermelonos slstatus-watermelonos st-watermelonos
 
@@ -150,7 +150,7 @@ exitorinstall() {
     fi
 }
 
-sudo pacman --needed --ask 4 -S librewolf-bin neovim picom feh conky pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber xorg-xinput sddm sddm-openrc sddm-theme-aerial-git xorg-xinput zsh zsh-autosuggestions zsh-syntax-highlighting
+sudo pacman --needed --ask 4 -Sy - < pkglist.txt || error "Failed to install a required package from pkglist.txt." 
 
 echo "################################################################"
 echo "## Copying WatermelonOS configuration files from /etc/watermelonos into \$HOME ##"
