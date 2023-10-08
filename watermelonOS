@@ -59,7 +59,7 @@ addrepo() { \
     echo "#########################################################"
     grep -qxF "[omniverse]" /etc/pacman.conf ||
         ( echo " "; echo "[omniverse]"; \
-        echo "Server = https://eu-mirror.artixlinux.org/omniverse/$arch") | sudo tee -a /etc/pacman.conf
+        echo "Server = https://eu-mirror.artixlinux.org/omniverse/\$arch") | sudo tee -a /etc/pacman.conf
     sudo pacman -Sy
     sudo pacman -S systemd
     grep -qxF "[extra]" /etc/pacman.conf ||
