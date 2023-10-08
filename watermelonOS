@@ -71,7 +71,7 @@ addrepo() { \
     grep -qxF "[watermelonos-core-repo]" /etc/pacman.conf ||
         ( echo " "; echo "[watermelonos-core-repo]"; \
         echo "SigLevel = Optional DatabaseOptional"; \
-        echo "Server = https://github.com/TyroneWatermelon420/$repo/raw/main/$arch") | sudo tee -a /etc/pacman.conf
+        echo "Server = https://github.com/TyroneWatermelon420/\$repo/raw/main/\$arch") | sudo tee -a /etc/pacman.conf
     sudo pacman -Sy
 }
 
