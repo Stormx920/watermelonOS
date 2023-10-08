@@ -185,7 +185,7 @@ echo "##############################"
 while true; do
     read -p "Do you want to reboot to get your watermelonos? [Y/n] " yn
     case $yn in
-        [Yy]* ) reboot;;
+        [Yy]* ) loginctl reboot;;
         [Nn]* ) break;;
         "" ) reboot;;
         * ) echo "Please answer yes or no.";;
