@@ -13,10 +13,6 @@ network-manager-applet
 paru-bin
 pcmanfm-gtk3
 picom
-pipewire
-pipewire-alsa
-pipewire-pulse
-pipewire-jack
 qt5ct
 qt6ct
 sddm
